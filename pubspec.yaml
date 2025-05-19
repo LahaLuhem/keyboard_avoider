@@ -1,6 +1,6 @@
 name: keyboard_avoider2
 description: A lightweight alternative to the Scaffold widget for avoiding the on-screen software keyboard. Automatically scrolls obscured TextField child widgets into view on focus.
-version: 0.3.0
+version: 0.3.1
 homepage: https://github.com/LahaLuhem/keyboard_avoider
 
 environment:

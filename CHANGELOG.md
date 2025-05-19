@@ -1,3 +1,7 @@
+## 0.3.1
+
+* stripped out heavy assets
+
 ## 0.3.0
 
 * Migrated to Dart 3
