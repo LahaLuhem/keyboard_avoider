@@ -1,11 +1,12 @@
-import 'dart:math';
 import 'dart:collection';
-import 'package:flutter/widgets.dart';
-import 'package:flutter/rendering.dart';
+import 'dart:math';
 
-/// Wraps the [child] in a [AnimatedContainer] that adjusts its bottom [padding] to accommodate the on-screen keyboard.
-/// Unlike a [Scaffold], it only insets by the actual amount obscured by the keyboard.
-/// If [autoScroll] is true and the [child] contains a focused widget such as a [TextField],
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
+
+/// Wraps the [child] in a [AnimatedContainer] that adjusts its bottom `padding` to accommodate the on-screen keyboard.
+/// Unlike a `Scaffold`, it only insets by the actual amount obscured by the keyboard.
+/// If [autoScroll] is true and the [child] contains a focused widget such as a `TextField`,
 /// automatically scrolls so that it is just visible above the keyboard, plus any additional [focusPadding].
 class KeyboardAvoider extends StatefulWidget {
   /// The child to embed. If the [child] is not a [ScrollView], it is automatically embedded in a [SingleChildScrollView].
@@ -15,7 +16,7 @@ class KeyboardAvoider extends StatefulWidget {
   /// Duration of the resize animation. Defaults to 100ms. To disable, set to [Duration.zero].
   final Duration duration;
 
-  /// Animation curve. Defaults to [easeOut]
+  /// Animation curve. Defaults to [Curves.easeOut]
   final Curve curve;
 
   /// Whether to auto-scroll to the focused widget after the keyboard appears. Defaults to false.
@@ -27,8 +28,8 @@ class KeyboardAvoider extends StatefulWidget {
   final double focusPadding;
 
   KeyboardAvoider({
-    Key? key,
     required this.child,
+    Key? key,
     this.duration = const Duration(milliseconds: 100),
     this.curve = Curves.easeOut,
     this.autoScroll = false,
@@ -44,7 +45,7 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
   final _animationKey = GlobalKey<ImplicitlyAnimatedWidgetState>();
   void Function(AnimationStatus)? _animationListener;
   ScrollController? _scrollController;
-  double _overlap = 0.0;
+  var _overlap = 0.0;
 
   @override
   void initState() {
@@ -75,7 +76,7 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
     // If [child] is a [ScrollView], get its [ScrollController]
     // and embed the [child] directly in an [AnimatedContainer].
     if (widget.child is ScrollView) {
-      var scrollView = widget.child as ScrollView;
+      final scrollView = widget.child as ScrollView;
       _scrollController = scrollView.controller;
       return _buildAnimatedContainer(widget.child);
     }
@@ -86,17 +87,15 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
     if (widget.autoScroll) {
       _scrollController = ScrollController();
       return _buildAnimatedContainer(LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            controller: _scrollController,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight,
-              ),
-              child: widget.child,
+        builder: (context, constraints) => SingleChildScrollView(
+          controller: _scrollController,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight,
             ),
-          );
-        },
+            child: widget.child,
+          ),
+        ),
       ));
     }
 
@@ -127,15 +126,13 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
 
   /// Private
 
-  Widget _buildAnimatedContainer(Widget child) {
-    return AnimatedContainer(
-      key: _animationKey,
-      padding: EdgeInsets.only(bottom: _overlap),
-      duration: widget.duration,
-      curve: widget.curve,
-      child: child,
-    );
-  }
+  Widget _buildAnimatedContainer(Widget child) => AnimatedContainer(
+        key: _animationKey,
+        padding: EdgeInsets.only(bottom: _overlap),
+        duration: widget.duration,
+        curve: widget.curve,
+        child: child,
+      );
 
   void _resize() {
     if (!context.mounted) {
@@ -165,7 +162,7 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
     }
 
     // If widget is partially obscured by the keyboard, adjust bottom padding to fully expose it
-    final overlap = max(0.0, widgetRect.bottom - keyboardTop);
+    final double overlap = max(0, widgetRect.bottom - keyboardTop);
     if (overlap != _overlap) {
       setState(() {
         _overlap = overlap;
@@ -198,16 +195,13 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
   /// Finds the first focused [RenderEditable] child of [root] using a breadth-first search.
   RenderObject? _findFocusedObject(RenderObject? root) {
     if (root == null) return null;
-    final q = Queue<RenderObject>();
-    q.add(root);
+    final q = Queue<RenderObject>()..add(root);
     while (q.isNotEmpty) {
       final node = q.removeFirst();
       if (node is RenderEditable && node.hasFocus) {
         return node;
       }
-      node.visitChildren((child) {
-        q.add(child);
-      });
+      node.visitChildren(q.add);
     }
     return null;
   }
@@ -218,7 +212,7 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
     // Calculate the offset needed to show the object in the [ScrollView]
     // so that its bottom touches the top of the keyboard.
     final viewport = RenderAbstractViewport.of(object);
-    final offset = viewport.getOffsetToReveal(object, 1.0).offset + widget.focusPadding;
+    final offset = viewport.getOffsetToReveal(object, 1).offset + widget.focusPadding;
 
     // If the object is covered by the keyboard, scroll to reveal it,
     // and add [focusPadding] between it and top of the keyboard.
