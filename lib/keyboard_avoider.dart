@@ -29,13 +29,13 @@ class KeyboardAvoider extends StatefulWidget {
 
   KeyboardAvoider({
     required this.child,
-    Key? key,
     this.duration = const Duration(milliseconds: 100),
     this.curve = Curves.easeOut,
     this.autoScroll = false,
-    this.focusPadding = 12.0,
-  })  : assert(child is ScrollView ? child.controller != null : true),
-        super(key: key);
+    this.focusPadding = 12,
+    super.key,
+  }) : assert(child is! ScrollView || child.controller != null,
+            'If child is a ScrollView, it must have a ScrollController.');
 
   @override
   State<KeyboardAvoider> createState() => _KeyboardAvoiderState();
@@ -108,20 +108,16 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
   @override
   void didChangeMetrics() {
     //Need to wait a frame to get the new size
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _resize();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _resize());
   }
 
   /// AnimationStatus
 
   void _animationStatusChanged(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
-      final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0.0;
-      if (keyboardVisible) {
-        _keyboardShown();
-      }
-    }
+    if (status != AnimationStatus.completed) return;
+
+    final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0.0;
+    if (keyboardVisible) _keyboardShown();
   }
 
   /// Private
@@ -135,13 +131,10 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
       );
 
   void _resize() {
-    if (!context.mounted) {
-      return;
-    }
+    if (!context.mounted) return;
 
     // Calculate Rect of widget on screen
-    final object = context.findRenderObject();
-    final box = object as RenderBox;
+    final box = context.findRenderObject()! as RenderBox;
     final offset = box.localToGlobal(Offset.zero);
     final widgetRect = Rect.fromLTWH(
       offset.dx,
@@ -157,17 +150,11 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
     final keyboardTop = screenSize.height - screenInsets.bottom;
 
     // If widget is entirely covered by keyboard, do nothing
-    if (widgetRect.top > keyboardTop) {
-      return;
-    }
+    if (widgetRect.top > keyboardTop) return;
 
     // If widget is partially obscured by the keyboard, adjust bottom padding to fully expose it
     final double overlap = max(0, widgetRect.bottom - keyboardTop);
-    if (overlap != _overlap) {
-      setState(() {
-        _overlap = overlap;
-      });
-    }
+    if (overlap != _overlap) setState(() => _overlap = overlap);
   }
 
   void _keyboardShown() {
@@ -176,25 +163,20 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
       return;
     }
     // Need to wait a frame to get the new size
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToFocusedObject();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToFocusedObject());
   }
 
   void _scrollToFocusedObject() {
-    if (!context.mounted) {
-      return;
-    }
+    if (!context.mounted) return;
 
     final focused = _findFocusedObject(context.findRenderObject());
-    if (focused != null) {
-      _scrollToObject(focused);
-    }
+    if (focused != null) _scrollToObject(focused);
   }
 
   /// Finds the first focused [RenderEditable] child of [root] using a breadth-first search.
   RenderObject? _findFocusedObject(RenderObject? root) {
     if (root == null) return null;
+
     final q = Queue<RenderObject>()..add(root);
     while (q.isNotEmpty) {
       final node = q.removeFirst();
@@ -216,12 +198,11 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
 
     // If the object is covered by the keyboard, scroll to reveal it,
     // and add [focusPadding] between it and top of the keyboard.
-    if (offset > _scrollController!.position.pixels) {
-      _scrollController!.position.moveTo(
-        offset,
-        duration: widget.duration,
-        curve: widget.curve,
-      );
-    }
+    if (offset <= _scrollController!.position.pixels) return;
+    _scrollController!.position.moveTo(
+      offset,
+      duration: widget.duration,
+      curve: widget.curve,
+    );
   }
 }
