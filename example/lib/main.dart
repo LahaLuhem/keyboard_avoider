@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:keyboard_avoider/keyboard_avoider.dart';
+import 'package:keyboard_avoider2/keyboard_avoider2.dart';
 
 void main() => runApp(MyApp());
 

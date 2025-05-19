@@ -159,9 +159,7 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with WidgetsBindingOb
 
   void _keyboardShown() {
     // If auto scroll is not enabled, do nothing
-    if (!widget.autoScroll) {
-      return;
-    }
+    if (!widget.autoScroll) return;
     // Need to wait a frame to get the new size
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToFocusedObject());
   }
