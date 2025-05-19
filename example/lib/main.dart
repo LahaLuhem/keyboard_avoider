@@ -27,7 +27,9 @@ class MyApp extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 Flexible(flex: 2, child: _buildForm(40, Colors.green)),
-                Flexible(flex: 1, child: _buildPlaceholder(Colors.lightGreen),
+                Flexible(
+                  flex: 1,
+                  child: _buildPlaceholder(Colors.lightGreen),
                 ),
               ],
             ),
