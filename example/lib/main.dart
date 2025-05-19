@@ -6,7 +6,7 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   final ScrollController _scrollController = ScrollController();
 
-  MyApp({Key? key}) : super(key: key);
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +27,7 @@ class MyApp extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 Flexible(flex: 2, child: _buildForm(40, Colors.green)),
-                Flexible(
-                  flex: 1,
-                  child: _buildPlaceholder(Colors.lightGreen),
-                ),
+                Flexible(flex: 1, child: _buildPlaceholder(Colors.lightGreen)),
               ],
             ),
           ),
@@ -73,9 +70,7 @@ class MyApp extends StatelessWidget {
   Widget _buildPlaceholder(Color color) {
     return Container(
       color: color,
-      child: KeyboardAvoider(
-        child: const Placeholder(),
-      ),
+      child: KeyboardAvoider(child: const Placeholder()),
     );
   }
 }
