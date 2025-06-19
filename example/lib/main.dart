@@ -49,7 +49,6 @@ class MyApp extends StatelessWidget {
     return Container(
       color: color,
       child: KeyboardAvoider(
-        autoScroll: true,
         child: ListView.builder(
           padding: EdgeInsets.zero,
           controller: _scrollController,
