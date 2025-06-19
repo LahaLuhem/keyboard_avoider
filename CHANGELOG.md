@@ -1,3 +1,8 @@
+## 0.4.0
+
+* More robust implementation
+* Bumped up linter version
+
 ## 0.3.1
 
 * stripped out heavy assets
