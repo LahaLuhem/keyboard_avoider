@@ -8,12 +8,12 @@ class KeyboardAvoider extends StatefulWidget {
   final double maxPadding;
   final Duration duration;
 
-  const KeyboardAvoider(
-      {required this.child,
-      this.duration = const Duration(milliseconds: 300),
-      double? maxPadding,
-      super.key})
-      : maxPadding = maxPadding ?? double.infinity;
+  const KeyboardAvoider({
+    required this.child,
+    this.duration = const Duration(milliseconds: 300),
+    double? maxPadding,
+    super.key,
+  }) : maxPadding = maxPadding ?? double.infinity;
 
   @override
   State<KeyboardAvoider> createState() => _KeyboardAvoiderState();
@@ -31,9 +31,10 @@ class _KeyboardAvoiderState extends State<KeyboardAvoider> with SingleTickerProv
   void initState() {
     super.initState();
     _controller = AnimationController(duration: widget.duration, vsync: this);
-    _paddingAnimation = Tween<double>(begin: 0, end: 0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
+    _paddingAnimation = Tween<double>(
+      begin: 0,
+      end: 0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
   }
 
   @override
